@@ -476,6 +476,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderActivityCard(name, details) {
     const activityCard = document.createElement("div");
     activityCard.className = "activity-card";
+    activityCard.id = `activity-${encodeURIComponent(name)}`;
 
     // Calculate spots and capacity
     const totalSpots = details.max_participants;
@@ -499,9 +500,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Format the schedule using the new helper function
     const formattedSchedule = formatSchedule(details);
     const shareMessage = `Check out the ${name} activity at Mergington High School! Schedule: ${formattedSchedule}`;
-    const activityUrl = `${window.location.origin}${window.location.pathname}#activity-${encodeURIComponent(
-      name
-    )}`;
+    const activityUrl = `${window.location.origin}${window.location.pathname}#${activityCard.id}`;
     const encodedShareMessage = encodeURIComponent(shareMessage);
     const encodedActivityUrl = encodeURIComponent(activityUrl);
     const shareButtonsHtml = `
@@ -513,7 +512,7 @@ document.addEventListener("DOMContentLoaded", () => {
             href="https://twitter.com/intent/tweet?text=${encodedShareMessage}&url=${encodedActivityUrl}"
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="Share ${name} on X"
+            aria-label="Share this activity on X"
           >
             X
           </a>
@@ -522,7 +521,7 @@ document.addEventListener("DOMContentLoaded", () => {
             href="https://www.facebook.com/sharer/sharer.php?u=${encodedActivityUrl}"
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="Share ${name} on Facebook"
+            aria-label="Share this activity on Facebook"
           >
             Facebook
           </a>
@@ -531,7 +530,7 @@ document.addEventListener("DOMContentLoaded", () => {
             href="https://social-plugins.line.me/lineit/share?url=${encodedActivityUrl}"
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="Share ${name} on LINE"
+            aria-label="Share this activity on LINE"
           >
             LINE
           </a>

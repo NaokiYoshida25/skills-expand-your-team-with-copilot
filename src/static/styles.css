@@ -227,6 +227,12 @@ section h3 {
   opacity: 0.85;
 }
 
+.share-button:focus-visible {
+  opacity: 0.85;
+  outline: 2px solid var(--primary-dark);
+  outline-offset: 2px;
+}
+
 .share-x {
   background-color: #000000;
 }
