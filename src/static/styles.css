@@ -219,7 +219,8 @@ section h3 {
   font-size: 0.7rem;
   font-weight: 700;
   text-decoration: none;
-  color: var(--primary-text);
+  color: #ffffff;
+  border: 1px solid transparent;
   transition: opacity 0.2s ease;
 }
 
@@ -229,20 +230,32 @@ section h3 {
 
 .share-button:focus-visible {
   opacity: 0.85;
-  outline: 2px solid var(--primary-dark);
-  outline-offset: 2px;
+  outline: 2px solid var(--secondary-light);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 2px var(--surface), 0 0 0 5px var(--primary-dark);
+}
+
+@media (forced-colors: active) {
+  .share-button:focus-visible {
+    forced-color-adjust: none;
+    outline: 2px solid Highlight;
+    box-shadow: none;
+  }
 }
 
 .share-x {
   background-color: #000000;
+  border-color: #bdbdbd;
 }
 
 .share-facebook {
-  background-color: #1877f2;
+  background-color: #0d47a1;
+  border-color: #bbdefb;
 }
 
 .share-line {
   background-color: #06c755;
+  border-color: #004d2c;
 }
 
 /* Activity Tag */
