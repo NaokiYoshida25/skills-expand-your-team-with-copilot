@@ -498,6 +498,46 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Format the schedule using the new helper function
     const formattedSchedule = formatSchedule(details);
+    const shareMessage = `Check out the ${name} activity at Mergington High School! Schedule: ${formattedSchedule}`;
+    const activityUrl = `${window.location.origin}${window.location.pathname}#activity-${encodeURIComponent(
+      name
+    )}`;
+    const encodedShareMessage = encodeURIComponent(shareMessage);
+    const encodedActivityUrl = encodeURIComponent(activityUrl);
+    const shareButtonsHtml = `
+      <div class="social-share">
+        <span class="share-label">Share:</span>
+        <div class="share-buttons">
+          <a
+            class="share-button share-x"
+            href="https://twitter.com/intent/tweet?text=${encodedShareMessage}&url=${encodedActivityUrl}"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Share ${name} on X"
+          >
+            X
+          </a>
+          <a
+            class="share-button share-facebook"
+            href="https://www.facebook.com/sharer/sharer.php?u=${encodedActivityUrl}"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Share ${name} on Facebook"
+          >
+            Facebook
+          </a>
+          <a
+            class="share-button share-line"
+            href="https://social-plugins.line.me/lineit/share?url=${encodedActivityUrl}"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Share ${name} on LINE"
+          >
+            LINE
+          </a>
+        </div>
+      </div>
+    `;
 
     // Create activity tag
     const tagHtml = `
@@ -552,6 +592,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .join("")}
         </ul>
       </div>
+      ${shareButtonsHtml}
       <div class="activity-card-actions">
         ${
           currentUser
