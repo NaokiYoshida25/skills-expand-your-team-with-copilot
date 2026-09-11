@@ -51,6 +51,30 @@ document.addEventListener("DOMContentLoaded", () => {
     weekend: { days: ["Saturday", "Sunday"] }, // Weekend days
   };
 
+  const socialSharePlatforms = [
+    {
+      label: "X",
+      className: "share-button share-x",
+      ariaLabel: "Share this activity on X, opens in a new tab",
+      baseUrl: "https://twitter.com/intent/tweet",
+      queryParams: ({ message, url }) => ({ text: message, url }),
+    },
+    {
+      label: "Facebook",
+      className: "share-button share-facebook",
+      ariaLabel: "Share this activity on Facebook, opens in a new tab",
+      baseUrl: "https://www.facebook.com/sharer/sharer.php",
+      queryParams: ({ url }) => ({ u: url }),
+    },
+    {
+      label: "LINE",
+      className: "share-button share-line",
+      ariaLabel: "Share this activity on LINE, opens in a new tab",
+      buildUrl: ({ message, url }) =>
+        `https://line.me/R/msg/text/?${encodeURIComponent(`${message} ${url}`)}`,
+    },
+  ];
+
   // Initialize filters from active elements
   function initializeFilters() {
     // Initialize day filter
@@ -467,15 +491,43 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Display filtered activities
+    const baseShareUrl = new URL(
+      `${window.location.origin}${window.location.pathname}`
+    );
+
     Object.entries(filteredActivities).forEach(([name, details]) => {
-      renderActivityCard(name, details);
+      renderActivityCard(name, details, baseShareUrl);
     });
   }
 
+  function createActivityId(activityName) {
+    const stableHash = Array.from(activityName).reduce((hash, character) => {
+      const codePoint = character.codePointAt(0);
+      hash ^= codePoint;
+      return Math.imul(hash, 16777619);
+    }, 2166136261);
+
+    const baseSlug = activityName
+      .normalize("NFKD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+
+    const hashSuffix = (stableHash >>> 0).toString(36);
+    const safeBaseSlug = baseSlug
+      ? `${baseSlug}-${hashSuffix}`
+      : `item-${hashSuffix}`;
+    return `activity-${safeBaseSlug}`;
+  }
+
   // Function to render a single activity card
-  function renderActivityCard(name, details) {
+  function renderActivityCard(name, details, baseShareUrl) {
     const activityCard = document.createElement("div");
     activityCard.className = "activity-card";
+    const activityId = createActivityId(name);
+    activityCard.id = activityId;
 
     // Calculate spots and capacity
     const totalSpots = details.max_participants;
@@ -524,7 +576,7 @@ document.addEventListener("DOMContentLoaded", () => {
       <h4>${name}</h4>
       <p>${details.description}</p>
       <p class="tooltip">
-        <strong>Schedule:</strong> ${formattedSchedule}
+        <strong>Schedule:</strong> <span class="schedule-value">${formattedSchedule}</span>
         <span class="tooltip-text">Regular meetings at this time throughout the semester</span>
       </p>
       ${capacityIndicator}
@@ -552,6 +604,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .join("")}
         </ul>
       </div>
+      <div class="social-share" data-share-container></div>
       <div class="activity-card-actions">
         ${
           currentUser
@@ -570,6 +623,49 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       </div>
     `;
+
+    const activityUrl = new URL(baseShareUrl.toString());
+    activityUrl.hash = activityId;
+
+    const shareContainer = activityCard.querySelector("[data-share-container]");
+    const shareMessage = `Check out the ${name} activity at Mergington High School.`;
+    const shareLabel = document.createElement("span");
+    shareLabel.className = "share-label";
+    shareLabel.id = `${activityId}-share-label`;
+    shareLabel.textContent = "Share:";
+
+    const shareButtons = document.createElement("div");
+    shareButtons.className = "share-buttons";
+    shareButtons.setAttribute("role", "group");
+    shareButtons.setAttribute("aria-labelledby", shareLabel.id);
+
+    const shareVariables = {
+      message: shareMessage,
+      url: activityUrl.toString(),
+    };
+
+    socialSharePlatforms.forEach((platform) => {
+      const shareLink = document.createElement("a");
+      shareLink.className = platform.className;
+      if (platform.buildUrl) {
+        shareLink.href = platform.buildUrl(shareVariables);
+      } else {
+        const shareLinkUrl = new URL(platform.baseUrl);
+        const platformParams = platform.queryParams(shareVariables);
+        Object.entries(platformParams).forEach(([queryKey, queryValue]) => {
+          shareLinkUrl.searchParams.set(queryKey, queryValue);
+        });
+        shareLink.href = shareLinkUrl.toString();
+      }
+      shareLink.target = "_blank";
+      shareLink.rel = "noopener noreferrer";
+      shareLink.setAttribute("aria-label", platform.ariaLabel);
+      shareLink.textContent = platform.label;
+      shareButtons.appendChild(shareLink);
+    });
+
+    shareContainer.appendChild(shareLabel);
+    shareContainer.appendChild(shareButtons);
 
     // Add click handlers for delete buttons
     const deleteButtons = activityCard.querySelectorAll(".delete-participant");

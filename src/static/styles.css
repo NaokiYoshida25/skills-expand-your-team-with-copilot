@@ -190,6 +190,74 @@ section h3 {
   justify-content: center;
 }
 
+.social-share {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-light);
+}
+
+.share-label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.share-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.share-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  padding: 4px 8px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-decoration: none;
+  color: #ffffff;
+  border: 1px solid transparent;
+  transition: opacity 0.2s ease;
+}
+
+.share-button:hover {
+  opacity: 0.85;
+}
+
+.share-button:focus-visible {
+  opacity: 0.85;
+  outline: 2px solid var(--secondary-light);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 2px var(--surface), 0 0 0 5px var(--primary-dark);
+}
+
+@media (forced-colors: active) {
+  .share-button:focus-visible {
+    forced-color-adjust: none;
+    outline: 2px solid Highlight;
+    box-shadow: none;
+  }
+}
+
+.share-x {
+  background-color: #000000;
+  border-color: #bdbdbd;
+}
+
+.share-facebook {
+  background-color: #0d47a1;
+  border-color: #bbdefb;
+}
+
+.share-line {
+  background-color: #06c755;
+  border-color: #004d2c;
+}
+
 /* Activity Tag */
 .activity-tag {
   position: absolute;
